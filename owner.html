@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Owner - Sri Sivamurugan Crackers</title>
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Hind+Madurai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F2FA;--surface:#fff;--ink:#141834;--muted:#5A5F82;--line:#DAD8EA;--chip:#E9E8F6;
+  --marigold:#F2A81D;--on-marigold:#1A1200;--price:#B3261E;--warn:#B3261E;--ok:#1E7B4B;
+  --display:"Yeseva One",Georgia,serif;--body:"Hind Madurai","Noto Sans Tamil",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1029;--surface:#151A3F;--ink:#F1EEE3;--muted:#A7ABCE;--line:#2A3060;--chip:#1E2450;--price:#F5B740;--warn:#FF8A80;--ok:#5FD08F}}
+:root[data-theme="dark"]{--bg:#0C1029;--surface:#151A3F;--ink:#F1EEE3;--muted:#A7ABCE;--line:#2A3060;--chip:#1E2450;--price:#F5B740;--warn:#FF8A80;--ok:#5FD08F}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--marigold);outline-offset:2px}
+[hidden]{display:none!important}
+.wrap{max-width:980px;margin:0 auto;padding:16px}
+h1{font-family:var(--display);font-weight:400;font-size:26px;margin:0}
+.login{max-width:380px;margin:12vh auto 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px}
+.login p{color:var(--muted);margin:6px 0 18px}
+.fld label{display:block;font-weight:600;margin-bottom:4px}
+.fld input{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:11px 12px;font-size:16px}
+.primary{width:100%;margin-top:14px;background:var(--marigold);color:var(--on-marigold);border:0;border-radius:10px;padding:12px;font-weight:700;font-size:17px}
+.primary[disabled]{opacity:.5}
+.err{color:var(--warn);min-height:1.4em;margin-top:10px;font-size:15px}
+.head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.head .sp{flex:1}
+.btn{background:var(--chip);border:0;border-radius:999px;padding:8px 16px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat b{display:block;font-family:var(--display);font-weight:400;font-size:26px;color:var(--price)}
+.stat span{color:var(--muted);font-size:14px}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px}
+.tab{flex:none;background:var(--chip);border:2px solid transparent;border-radius:999px;padding:6px 14px}
+.tab[aria-pressed="true"]{border-color:var(--marigold);font-weight:700}
+.search{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 16px;margin-bottom:12px}
+.order{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--c,#F2A81D);border-radius:12px;padding:14px;margin-bottom:10px}
+.order[data-s="Packed"]{--c:#8B5CD6}.order[data-s="Delivered"]{--c:#3E8E41}.order[data-s="Cancelled"]{--c:#888}
+.top{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline}
+.top b{font-size:18px}.top .d{color:var(--muted);font-size:14px}.top .t{margin-left:auto;font-family:var(--display);font-size:22px;color:var(--price)}
+.who{margin:4px 0}
+.who a{color:inherit}
+.items{margin:8px 0;padding-left:18px;color:var(--muted);font-size:15px}
+.st{display:flex;align-items:center;gap:8px;margin-top:8px}
+.st select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:7px 10px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:15px;z-index:9}
+.empty{text-align:center;color:var(--muted);padding:40px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="login" id="login">
+    <h1>Owner login</h1>
+    <p>Sri Sivamurugan Crackers orders</p>
+    <div class="fld"><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password"></div>
+    <button class="primary" id="go">Login</button>
+    <div class="err" id="lerr" role="alert"></div>
+  </section>
+
+  <section id="dash" hidden>
+    <div class="head">
+      <h1>Orders</h1><span class="sp"></span>
+      <button class="btn" id="refresh">Refresh</button>
+      <button class="btn" id="logout">Logout</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="sNew">0</b><span>New orders</span></div>
+      <div class="stat"><b id="sAll">0</b><span>All orders</span></div>
+      <div class="stat"><b id="sVal">0</b><span>Order value (without cancelled)</span></div>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <input class="search" id="q" type="search" placeholder="Search name, phone or order number" aria-label="Search orders">
+    <div id="list"></div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbzn1nLD5nbDDpSSsAyyKy25qdJ4yzKvmbOGkP2OSKPBvZ82e1bfgyFeOICpjXPoswkr/exec";
+const STATUSES=["New","Packed","Delivered","Cancelled"];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=n=>"Rs. "+Math.round(n).toLocaleString("en-IN");
+let token="",orders=[],tab="All",timer=0;
+try{token=sessionStorage.getItem("ssc_owner_token")||""}catch(e){}
+
+async function api(body){
+  const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});
+  return r.json();
+}
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
+
+async function login(){
+  const pw=$("#pw").value;if(!pw){$("#lerr").textContent="Enter the password.";return}
+  const b=$("#go");b.disabled=true;b.textContent="Checking...";$("#lerr").textContent="";
+  try{
+    const r=await api({action:"ownerLogin",password:pw});
+    if(!r.ok)throw new Error(r.error||"Login failed");
+    token=r.token;try{sessionStorage.setItem("ssc_owner_token",token)}catch(e){}
+    $("#pw").value="";show();
+  }catch(e){$("#lerr").textContent=e.message==="Failed to fetch"?"Could not reach the server. Check your internet.":e.message}
+  b.disabled=false;b.textContent="Login";
+}
+function logout(){
+  token="";clearInterval(timer);try{sessionStorage.removeItem("ssc_owner_token")}catch(e){}
+  $("#dash").hidden=true;$("#login").hidden=false;$("#pw").focus();
+}
+function show(){
+  $("#login").hidden=true;$("#dash").hidden=false;load();
+  clearInterval(timer);timer=setInterval(()=>{if(!document.hidden)load(true)},60000);
+}
+async function load(quiet){
+  try{
+    const r=await api({action:"orders",token});
+    if(!r.ok){if(/login again/i.test(r.error||"")){logout();$("#lerr").textContent="Session ended. Login again.";return}throw new Error(r.error)}
+    orders=r.orders;render();
+  }catch(e){if(!quiet)toast("Could not load orders. Try Refresh.")}
+}
+function render(){
+  const live=orders.filter(o=>o.status!=="Cancelled");
+  $("#sNew").textContent=orders.filter(o=>o.status==="New").length;
+  $("#sAll").textContent=orders.length;
+  $("#sVal").textContent=fmt(live.reduce((a,o)=>a+o.total,0));
+  const names=["All",...STATUSES];
+  $("#tabs").innerHTML=names.map(n=>{const c=n==="All"?orders.length:orders.filter(o=>o.status===n).length;
+    return `<button class="tab" data-t="${n}" aria-pressed="${tab===n}">${n} (${c})</button>`}).join("");
+  const q=$("#q").value.trim().toLowerCase();
+  const rows=orders.filter(o=>(tab==="All"||o.status===tab)&&(!q||(o.name+" "+o.phone+" "+o.orderId).toLowerCase().includes(q)));
+  $("#list").innerHTML=rows.length?rows.map(o=>`
+    <article class="order" data-s="${esc(o.status)}">
+      <div class="top"><b>${esc(o.orderId)}</b><span class="d">${esc(o.date)}</span><span class="t">${fmt(o.total)}</span></div>
+      <div class="who"><b>${esc(o.name)}</b> &middot; <a href="tel:${esc(o.phone)}">${esc(o.phone)}</a></div>
+      <div class="who">${esc(o.address)}</div>
+      <ul class="items">${String(o.items).split("; ").map(i=>`<li>${esc(i)}</li>`).join("")}</ul>
+      <div class="st"><label for="s-${esc(o.orderId)}">Status</label>
+        <select id="s-${esc(o.orderId)}" data-id="${esc(o.orderId)}">${STATUSES.map(s=>`<option ${s===o.status?"selected":""}>${s}</option>`).join("")}</select></div>
+    </article>`).join(""):`<div class="empty">No orders here yet.</div>`;
+}
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(b){tab=b.dataset.t;render()}});
+$("#q").addEventListener("input",render);
+$("#list").addEventListener("change",async e=>{
+  const sel=e.target.closest("select");if(!sel)return;
+  const o=orders.find(x=>x.orderId===sel.dataset.id);if(!o)return;
+  const old=o.status;sel.disabled=true;
+  try{
+    const r=await api({action:"updateStatus",token,orderId:o.orderId,status:sel.value});
+    if(!r.ok)throw new Error(r.error);
+    o.status=sel.value;toast("Status changed to "+o.status);
+  }catch(err){sel.value=old;toast("Could not change status")}
+  render();
+});
+$("#go").addEventListener("click",login);
+$("#pw").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+$("#refresh").addEventListener("click",()=>{load();toast("Refreshed")});
+$("#logout").addEventListener("click",logout);
+if(token)show();
+</script>
+</body>
+</html>
