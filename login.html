@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Login - Sri Sivamurugan Crackers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Hind+Madurai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="auth.css">
+</head>
+<body>
+<header class="band"><div class="wrap">
+  <div class="nav"><a class="shop" href="index.html">&larr; Sri Sivamurugan Crackers</a></div>
+  <h1>Login</h1>
+  <p>Login to see your past orders.</p>
+</div></header>
+<main><div class="wrap"><section class="panel">
+  <form id="f" novalidate>
+    <div class="fld"><label for="ph">Mobile number</label>
+      <input id="ph" type="tel" inputmode="numeric" autocomplete="username" maxlength="10">
+      <div class="err" id="e1"></div></div>
+    <div class="fld"><label for="pw">Password</label>
+      <div class="pwrow"><input id="pw" type="password" autocomplete="current-password"><button type="button" class="eye" id="eye">Show</button></div>
+      <div class="err" id="e2"></div></div>
+    <p class="err" id="fe" role="alert"></p>
+    <button class="primary" id="go" type="submit">Login</button>
+  </form>
+  <p class="alt">New here? <a id="reg" href="register.html">Create an account</a></p>
+  <p class="alt small">You can also order without an account. <a href="index.html">Go to shop</a></p>
+</section></div></main>
+<script src="auth.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const next=safeNext();
+if(getSession())location.replace(next);
+$("#reg").href="register.html"+(next!=="index.html"?"?next="+next:"");
+$("#eye").onclick=()=>{const p=$("#pw"),show=p.type==="password";p.type=show?"text":"password";$("#eye").textContent=show?"Hide":"Show"};
+$("#f").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const phone=$("#ph").value.replace(/\D/g,"").slice(-10),pw=$("#pw").value;
+  const phoneOk=/^[6-9]\d{9}$/.test(phone);
+  $("#e1").textContent=phoneOk?"":"Enter a 10 digit mobile number.";
+  $("#e2").textContent=pw?"":"Enter your password.";
+  $("#fe").textContent="";
+  if(!phoneOk||!pw)return;
+  const b=$("#go");b.disabled=true;b.textContent="Logging in...";
+  const r=await api({action:"login",phone,password:pw});
+  if(!r.ok){b.disabled=false;b.textContent="Login";$("#fe").textContent=errMsg(r);return}
+  saveSession(r);location.href=next;
+});
+</script>
+</body>
+</html>

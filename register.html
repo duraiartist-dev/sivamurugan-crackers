@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Create account - Sri Sivamurugan Crackers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Hind+Madurai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="auth.css">
+</head>
+<body>
+<header class="band"><div class="wrap">
+  <div class="nav"><a class="shop" href="index.html">&larr; Sri Sivamurugan Crackers</a></div>
+  <h1>Create account</h1>
+  <p>Save your details and see all your orders in one place.</p>
+</div></header>
+<main><div class="wrap"><section class="panel">
+  <form id="f" novalidate>
+    <div class="fld"><label for="nm">Full name</label>
+      <input id="nm" autocomplete="name"><div class="err" id="e0"></div></div>
+    <div class="fld"><label for="ph">Mobile number</label>
+      <input id="ph" type="tel" inputmode="numeric" autocomplete="username" maxlength="10">
+      <div class="hint">Use the same number you give when placing orders.</div>
+      <div class="err" id="e1"></div></div>
+    <div class="fld"><label for="pw">Password</label>
+      <div class="pwrow"><input id="pw" type="password" autocomplete="new-password"><button type="button" class="eye" id="eye">Show</button></div>
+      <div class="hint">At least 6 characters. Do not use a password you use elsewhere.</div>
+      <div class="err" id="e2"></div></div>
+    <p class="err" id="fe" role="alert"></p>
+    <button class="primary" id="go" type="submit">Create account</button>
+  </form>
+  <p class="alt">Already have an account? <a id="log" href="login.html">Login</a></p>
+</section></div></main>
+<script src="auth.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const next=safeNext();
+if(getSession())location.replace(next);
+$("#log").href="login.html"+(next!=="index.html"?"?next="+next:"");
+$("#eye").onclick=()=>{const p=$("#pw"),show=p.type==="password";p.type=show?"text":"password";$("#eye").textContent=show?"Hide":"Show"};
+$("#f").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const name=$("#nm").value.trim(),phone=$("#ph").value.replace(/\D/g,"").slice(-10),pw=$("#pw").value;
+  const phoneOk=/^[6-9]\d{9}$/.test(phone);
+  $("#e0").textContent=name.length>=2?"":"Enter your name.";
+  $("#e1").textContent=phoneOk?"":"Enter a 10 digit mobile number.";
+  $("#e2").textContent=pw.length>=6?"":"Password must be at least 6 characters.";
+  $("#fe").textContent="";
+  if(name.length<2||!phoneOk||pw.length<6)return;
+  const b=$("#go");b.disabled=true;b.textContent="Creating account...";
+  const r=await api({action:"register",name,phone,password:pw});
+  if(!r.ok){b.disabled=false;b.textContent="Create account";$("#fe").textContent=errMsg(r);return}
+  saveSession(r);location.href=next;
+});
+</script>
+</body>
+</html>
