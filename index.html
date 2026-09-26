@@ -146,6 +146,18 @@ footer p,footer ol{margin:0;padding-left:0;list-style-position:inside}
 .pv-close{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.4);color:#fff;border:0;border-radius:50%;width:34px;height:34px;font-size:18px;z-index:2}
   .chips{scrollbar-width:none;-ms-overflow-style:none}
 .chips::-webkit-scrollbar{display:none}
+  @keyframes goldGlow{
+  0%,100%{text-shadow:0 0 8px rgba(242,168,29,.55),0 0 18px rgba(242,168,29,.3)}
+  50%{text-shadow:0 0 16px rgba(242,168,29,.9),0 0 32px rgba(242,168,29,.55)}
+}
+@keyframes sealGlow{
+  0%,100%{box-shadow:0 0 14px rgba(245,194,90,.5),0 0 0 6px rgba(179,38,30,.35)}
+  50%{box-shadow:0 0 30px rgba(245,194,90,.9),0 0 0 6px rgba(179,38,30,.35)}
+}
+.hero h1{animation:goldGlow 2.6s ease-in-out infinite}
+.hero .shop{color:var(--marigold);text-shadow:0 0 10px rgba(242,168,29,.5);letter-spacing:.03em}
+.seal{animation:sealGlow 2.4s ease-in-out infinite}
+.cat h2{text-shadow:0 0 10px color-mix(in srgb,var(--c) 55%,transparent)}
 </style>
 </head>
 <body>
