@@ -63,6 +63,9 @@ h1{font-family:var(--display);font-weight:400;font-size:26px;margin:0}
 .temp b{display:block;font-family:var(--display);font-size:28px;letter-spacing:.06em;color:var(--price);margin-bottom:6px}
 .temp span{color:var(--muted);font-size:14px}
 .ok{color:var(--ok);font-size:15px;min-height:1.4em;margin-top:10px}
+.primary{display:flex;align-items:center;justify-content:center;gap:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:16px;height:16px;border-radius:50%;border:2.5px solid rgba(0,0,0,.25);border-top-color:currentColor;animation:spin .7s linear infinite;flex:none}
 </style>
 </head>
 <body>
@@ -71,7 +74,7 @@ h1{font-family:var(--display);font-weight:400;font-size:26px;margin:0}
     <h1>Owner login</h1>
     <p>Sri Sivamurugan Crackers orders</p>
     <div class="fld"><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password"></div>
-    <button class="primary" id="go">Login</button>
+    <button class="primary" id="go"><span id="goLabel">Login</span></button>
     <div class="err" id="lerr" role="alert"></div>
   </section>
 
@@ -103,7 +106,7 @@ h1{font-family:var(--display);font-weight:400;font-size:26px;margin:0}
       <div class="err" id="rerr" role="alert"></div>
       <div class="row2">
         <button class="ghost" id="rpCancel">Cancel</button>
-        <button class="primary" id="rpSubmit">Reset</button>
+        <button class="primary" id="rpSubmit"><span id="rpSubmitLabel">Reset</span></button>
       </div>
     </div>
     <div id="resetResult" hidden>
@@ -128,6 +131,8 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 const fmt=n=>"Rs. "+Math.round(n).toLocaleString("en-IN");
 let token="",orders=[],tab="All",timer=0;
 try{token=sessionStorage.getItem("ssc_owner_token")||""}catch(e){}
+function setBtnLoading(btn,labelEl,text){btn.disabled=true;labelEl.innerHTML=`<span class="spinner" aria-hidden="true"></span><span>${text}</span>`}
+function setBtnIdle(btn,labelEl,text){btn.disabled=false;labelEl.textContent=text}
 
 async function api(body){
   const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});
@@ -137,14 +142,14 @@ function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTim
 
 async function login(){
   const pw=$("#pw").value;if(!pw){$("#lerr").textContent="Enter the password.";return}
-  const b=$("#go");b.disabled=true;b.textContent="Checking...";$("#lerr").textContent="";
+  const b=$("#go"),lbl=$("#goLabel");setBtnLoading(b,lbl,"Checking...");$("#lerr").textContent="";
   try{
     const r=await api({action:"ownerLogin",password:pw});
     if(!r.ok)throw new Error(r.error||"Login failed");
     token=r.token;try{sessionStorage.setItem("ssc_owner_token",token)}catch(e){}
     $("#pw").value="";show();
   }catch(e){$("#lerr").textContent=e.message==="Failed to fetch"?"Could not reach the server. Check your internet.":e.message}
-  b.disabled=false;b.textContent="Login";
+  setBtnIdle(b,lbl,"Login");
 }
 function logout(){
   token="";clearInterval(timer);try{sessionStorage.removeItem("ssc_owner_token")}catch(e){}
@@ -205,7 +210,7 @@ function openReset(){
   rpLastFocus=document.activeElement;
   $("#rpPhone").value="";$("#rerr").textContent="";
   $("#resetForm").hidden=false;$("#resetResult").hidden=true;
-  $("#rpSubmit").disabled=false;$("#rpSubmit").textContent="Reset";
+  $("#rpSubmit").disabled=false;$("#rpSubmitLabel").textContent="Reset";
   $("#resetScrim").hidden=false;
   setTimeout(()=>$("#rpPhone").focus(),50);
 }
@@ -217,7 +222,7 @@ async function submitReset(){
   const phone=$("#rpPhone").value.trim();
   if(!/^[6-9]\d{9}$/.test(phone)){$("#rerr").textContent="Enter a valid 10 digit mobile number.";return}
   $("#rerr").textContent="";
-  const b=$("#rpSubmit");b.disabled=true;b.textContent="Resetting...";
+  const b=$("#rpSubmit"),lbl=$("#rpSubmitLabel");setBtnLoading(b,lbl,"Resetting...");
   try{
     const r=await api({action:"resetPassword",token,phone});
     if(!r.ok)throw new Error(r.error||"Could not reset password.");
@@ -230,7 +235,7 @@ async function submitReset(){
     if(/login again/i.test(e.message||"")){closeReset();logout();$("#lerr").textContent="Session ended. Login again.";return}
     $("#rerr").textContent=e.message==="Failed to fetch"?"Could not reach the server. Check your internet.":e.message;
   }
-  b.disabled=false;b.textContent="Reset";
+  setBtnIdle(b,lbl,"Reset");
 }
 $("#resetPwBtn").addEventListener("click",openReset);
 $("#rpCancel").addEventListener("click",closeReset);
